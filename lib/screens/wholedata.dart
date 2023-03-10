@@ -10,30 +10,66 @@ class Wholedata extends StatefulWidget {
   @override
   State<Wholedata> createState() => _WholedataState();
 }
-
+Providers list=Providers();
+List searchedArr=list.arr;
 class _WholedataState extends State<Wholedata> {
+  TextEditingController search=TextEditingController();
+  
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<Providers>(builder: (context, providerObj, child) {
-        return(
-        ListView.builder(
-          itemCount: providerObj.arr.length,
-           itemBuilder: (BuildContext context, int index) { 
+        
+        body: Consumer<Providers>(
+          builder: (context, providerObj, child) {
             return Column(
-              children: [
-                ListTile(
-                  onTap: () {
-                    Navigator.pushNamed(context, '/selected',arguments: index);
-                  },
-                  title: Text('${providerObj.arr[index]['country']} - ${providerObj.arr[index]['capital']} '),
-                )
+              children: [ TextField(
+                controller: search,
+                onChanged: (value) {
+                 setState(() {
+                  List temp=[];
+                    print(value);
+                  for(int i=0; i<providerObj.arr.length; i++){
+                    if(providerObj.arr[i]['country'].toString().contains(value) || providerObj.arr[i]['capital'].toString().contains(value)){
+                      temp.add(providerObj.arr[i]);
+                    }
+                  }
+                searchedArr=temp;
+                 });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search',
+                  // border: OutlineInputBorder(borderSide: BorderSide(color: Colors.black26))
+
+                ),
+              ),
+                Container(
+                  height: 200,
+                  width: 500,
+                  child: ListView.builder(
+                    itemCount: searchedArr.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Column(
+                        children: [
+                          ListTile(
+                            onTap: () {
+                                var obj=searchedArr[index];
+                                print(obj);
+                              Navigator.pushNamed(context, '/selected',
+                                  arguments: obj); 
+                            },
+                            title: Text  (
+
+                                '${searchedArr[index]['country']} - ${searchedArr[index]['capital']}'),
+                          )
+                        ],
+                      );
+                    },
+                  ),
+                ),
               ],
             );
-            },)
-      );},)
-        
-      );
-    
+          },
+        ));
   }
 }
